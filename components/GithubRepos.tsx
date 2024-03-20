@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 
 const GithubRepos = ({id}) => {
 
-  const GITHUB_KEY = process.env.GITHUB_PAT;
+  const GITHUB_KEY = process.env.NEXT_PUBLIC_GITHUB_PAT;
 
     const [name, setName] = useState("");
     const [repos, setRepos] = useState([]);
@@ -21,13 +21,16 @@ const GithubRepos = ({id}) => {
     
     const router = useRouter();
     
-    const toggleSelection = (repoId) => {
+    const toggleSelection = (repoId,repoName ,repoUrl) => {
         setSelectedRepos(prevSelectedRepos => {
-          const newSelectedRepos = new Set(prevSelectedRepos);
-          if (newSelectedRepos.has(repoId)) {
-            newSelectedRepos.delete(repoId);
+          const newSelectedRepos = new Set([...prevSelectedRepos]);
+          const repoData = { id: repoId,name: repoName ,url: repoUrl };
+      
+          const existingRepo = [...newSelectedRepos].find(repo => repo.id === repoId);
+          if (existingRepo) {
+            newSelectedRepos.delete(existingRepo);
           } else {
-            newSelectedRepos.add(repoId);
+            newSelectedRepos.add(repoData);
           }
           console.log(newSelectedRepos);
           return newSelectedRepos;
@@ -36,14 +39,14 @@ const GithubRepos = ({id}) => {
 
       const toggleAllRepos = () => {
         if (allSelected) {
-            selectedRepos = new Set()
+            selectedRepos =new Set()
             setSelectedRepos(selectedRepos);
+            setAllSelected(false);
         } else {
-          const allRepoIds = repos.map(repo => repo.id);
-          selectedRepos = new Set(allRepoIds);
+          const allRepoData = repos.map(repo => ({ id: repo.id, name: repo.name ,url: repo.homepage }));
+          selectedRepos = new Set(allRepoData);
           setSelectedRepos(selectedRepos);
         }
-        
         console.log(selectedRepos);
       };
       
@@ -53,7 +56,7 @@ const GithubRepos = ({id}) => {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `${GITHUB_KEY}`
+                'Authorization': `Bearer ${GITHUB_KEY}`
             },
         });
         const data = await res.json();
@@ -65,7 +68,7 @@ const GithubRepos = ({id}) => {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `${GITHUB_KEY}`
+                'Authorization': `Bearer ${GITHUB_KEY}`
             },
         });
         let data = await res.json();
@@ -96,7 +99,6 @@ const GithubRepos = ({id}) => {
   const nextPage = async() => {
     let selectedReposArray = Array.from(selectedRepos);
     console.log(selectedReposArray);
-
     await fetch("/api/files",{
             method: 'POST',
             headers: {
@@ -104,12 +106,12 @@ const GithubRepos = ({id}) => {
             },
             body: JSON.stringify(selectedReposArray)
         })
-        
+    router.push(`/user/${id}/repo`)
   }
 
   useEffect(() => {
-    setAllSelected(repos.length > 0 && repos.every(repo => selectedRepos.has(repo.id)));
-  }, [repos, selectedRepos]);
+    setAllSelected(repos.length > 0 && repos.every(repo => [...selectedRepos].some(selectedRepo => selectedRepo.id === repo.id)));
+}, [repos, selectedRepos]);
 
 
   useEffect(() => {
@@ -157,7 +159,7 @@ const GithubRepos = ({id}) => {
                                     }
                                 </Link>
                                 <div className="flex items-center">
-                                    <input className="appearance-none mr-2 w-[2.5em] h-[2.5em] border-2 border-blue-500 rounded-sm checked:bg-blue-800  checked:border-white bg-white/10" type="checkbox" checked={selectedRepos.has(repo.id)} onChange={() => toggleSelection(repo.id)} />
+                                    <input className="appearance-none mr-2 w-[2.5em] h-[2.5em] border-2 border-blue-500 rounded-sm checked:bg-blue-800  checked:border-white bg-white/10" type="checkbox" checked={[...selectedRepos].some(selectedRepo => selectedRepo.id === repo.id)} onChange={() => toggleSelection(repo.id,repo.name,repo.homepage)} />
                                 </div>
                             </div>
                         )

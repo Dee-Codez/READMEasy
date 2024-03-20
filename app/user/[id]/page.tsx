@@ -9,8 +9,6 @@ type nameProps = {
 
 function Page({params} : nameProps) {
 
-  
-
   return (
     <div className="text-white">
       

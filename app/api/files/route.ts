@@ -2,7 +2,8 @@ const fs = require('fs');
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET() {
-    return Response.json({ username: "harkirat", email: "harkirat@gmail.com" })
+    const file = fs.readFileSync(process.cwd() + '/data/url.json');
+    return NextResponse.json(JSON.parse(file.toString()));
   }
 
 

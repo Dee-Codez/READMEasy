@@ -9,15 +9,19 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.3.1",
     "fs": "^0.0.1-security",
     "fs.promises": "^0.1.2",
     "geist": "^1.2.2",
+    "get-repo-package-json": "^2.0.0",
     "moment": "^2.30.1",
     "next": "14.1.3",
     "react": "^18",
     "react-dom": "^18",
     "react-icons": "^5.0.1",
-    "react-moment": "^1.1.3"
+    "react-loader-spinner": "^6.1.6",
+    "react-moment": "^1.1.3",
+    "react-spinners": "^0.13.8"
   },
   "devDependencies": {
     "@types/node": "^20",

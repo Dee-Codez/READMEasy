@@ -42,8 +42,8 @@ const Githubinput = () => {
     }
 
   return (
-    <div>
-      <form onSubmit={GitCheck} className="bg-white/15 flex flex-col gap-4 p-6 pb-10 rounded-lg">
+    <div className="relative">
+      <form onSubmit={GitCheck} className="bg-white/15  flex flex-col gap-4 p-[4vw] rounded-lg">
               {(validGit==false) && <p className="text-red-500 text-sm">*Enter Valid Github ID</p>}
               <label htmlFor="githubid">Enter Github ID : </label>
                 <input type="text" className="outline-none rounded-md bg-white/20 p-2" onChange={handleIdChange} />

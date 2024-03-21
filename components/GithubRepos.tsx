@@ -104,7 +104,7 @@ const GithubRepos = ({id}) => {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(selectedReposArray)
+            body: JSON.stringify({path: "/data/url.json", content: selectedReposArray})
         })
     router.push(`/user/${id}/repo`)
   }

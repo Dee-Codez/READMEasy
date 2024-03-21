@@ -9,7 +9,7 @@ type nameProps = {
 function Page({params} : nameProps) {
   
   return (
-    <div>
+    <div className="">
         
         <Loader id={params.id}/>
     </div>

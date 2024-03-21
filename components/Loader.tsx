@@ -1,5 +1,6 @@
 "use client"
 
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import {Hourglass} from 'react-loader-spinner'
 
@@ -7,11 +8,14 @@ const GITHUB_KEY = process.env.NEXT_PUBLIC_GITHUB_PAT;
 
 function Loader({id}) {
   const [loading, setLoading] = useState(true);
-  let [repoList, setRepoList] = useState(null);
-  let [currRepo, setCurrRepo] = useState(null);
+  let [repoList, setRepoList] = useState([]);
+  let [currRepo, setCurrRepo] = useState(new Set());
   let [pkg, setPkg] = useState(null);
   let [folderDepth, setFolderDepth] = useState(0);
   let [repoPackage, setRepoPackage] = useState(new Set());
+  const [currProcess, setCurrProcess] = useState();
+
+  const router = useRouter();
 
   const fetchRepos = async() => {
     const res = await fetch(`/api/files`,{
@@ -25,6 +29,19 @@ function Loader({id}) {
         repoList = data;
         setRepoList(repoList);
         processRepo();
+  }
+
+  const saveReadme = async(repoName,readmeText) => {
+    const data = {name: repoName, text: readmeText};
+    const res = await fetch("/api/files",{
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({path: "/data/readme.json", content: data})
+  })
+  const val = await res.json();
+  console.log(val);
   }
 
   const getPackage = async(repoName,path="/") => {
@@ -63,13 +80,29 @@ function Loader({id}) {
     return data;
   }
 
-  const processRepo = async() => {
+  const getReadme = async(text) => {
+    const res = await fetch(`/api/googleai`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({query: text})
+    });
+    const data = await res.json();
+    return data;
+  }
 
+  const processRepo = async() => {
+    let k=1;
+    setCurrProcess(`Getting Deployement URLs`);
     for await (const i of repoList) {
       folderDepth=0;
+      let repoName = i.name;
       setFolderDepth(folderDepth);
-      const repoName = i.name;
-      setCurrRepo(repoName);
+      const repoData = { id: `${k}/${repoList.length}`, name: i.name };
+      currRepo = new Set([repoData]);
+      setCurrRepo(currRepo);
+      k++;
       const res = await fetch(`https://api.github.com/repos/${id}/${repoName}`, {
         method: 'GET',
         headers: {
@@ -81,27 +114,42 @@ function Loader({id}) {
       const repoLang = data.language;
       const repoUrl = data.homepage;
       const prompt = `Create a Readme.md file for a github project with title ${repoName} and description ${repoDesc}, built mostly using ${repoLang} language. The project is hosted at ${repoUrl}`;
+      setCurrProcess(`Finding package.json`);
       const packageJson = await getPackage(repoName);
-      console.log(repoPackage);
+      setCurrProcess(`Generating Readme Text`);
+      const readmeText = await getReadme(prompt);
+      setCurrProcess(`Saving Readme Text`);
+      saveReadme(repoName,readmeText);
     }
+    setCurrProcess(`Redirecting to Editor..`);
+    setTimeout(() => {router.push(`/user/${id}/editor`)}, 1000);
   }
 
   
   useEffect(() => {
-    fetchRepos();
+    const fxn = () =>{fetchRepos();}
+    fxn();
+    return () => {fxn()};
   },[])
 
 
   if(loading) return (<>
-  <div className='relative w-[100vw]'>
-    <div className='flex flex-col gap-10 justify-center items-center'>
-      <div className='flex justify-center items-center mt-32'>
-        <Hourglass color="#00BFFF" height={80} width={80} />
+    <div className='relative w-[100vw]'>
+      <div className='flex flex-col gap-10 justify-center  items-center'>
+        <div className='flex justify-center items-center mt-32'>
+          <Hourglass color="#00BFFF" height={80} width={80} />
+        </div>
+        <div className='text-white mt-10 text-2xl animate-pulse'>Fetching/Processing Repositories..</div>
+        <div className='text-xl flex gap-3'>
+          Working on 
+          {[...currRepo].map((repo) => {
+          return(<div key={repo.id}>{repo.name} ({repo.id})</div>)})}
+        </div>
+        <div>
+          {currProcess}
+        </div>
       </div>
-      <div className='text-white mt-10 text-2xl animate-pulse'>Fetching/Processing Repositories..</div>
-      <div className='text-xl'>Working on {currRepo}</div>
     </div>
-  </div>
   </>)
 
 

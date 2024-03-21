@@ -54,7 +54,7 @@ import { NextRequest, NextResponse } from 'next/server';
         },
         {
           role: "model",
-      parts: [{ text: "I am READMEasy, a helpful Large Language Model,fine tuned by Debam, that can assist you with a variety of tasks but mostly with creating good readme documentations for your repositories on the go. How can I help you today?"}],
+      parts: [{ text: "I am READMEasy, a helpful Large Language Model,fine tuned by Debam, that can assist you with a variety of tasks but mostly with creating good readme documentations for your repositories on the go. I'll answer in a straightforward manner from now on without mentioning any part of question in response"}],
         },
       ],
     });

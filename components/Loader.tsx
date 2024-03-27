@@ -14,11 +14,12 @@ function Loader({id}) {
   let [folderDepth, setFolderDepth] = useState(0);
   let [repoPackage, setRepoPackage] = useState(new Set());
   const [currProcess, setCurrProcess] = useState();
+  let [userId, setUserId] = useState();
 
   const router = useRouter();
 
   const fetchRepos = async() => {
-    const res = await fetch(`/api/files`,{
+    const res = await fetch(`/api/db/user?name=${id}`,{
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -26,19 +27,23 @@ function Loader({id}) {
         });
         const data = await res.json();
         console.log(data);
-        repoList = data;
+        userId = data.id;
+        setUserId(userId);
+        localStorage.setItem('userId',userId);
+        repoList = data.data;
         setRepoList(repoList);
         processRepo();
   }
 
-  const saveReadme = async(repoName,readmeText) => {
-    const data = {name: repoName, text: readmeText};
-    const res = await fetch("/api/files",{
+  const saveReadme = async(repoId,repoName,readmeText) => {
+    const data = {userid: userId ,repoid: repoId, name: repoName, content: readmeText};
+    console.log(data);
+    const res = await fetch("/api/db/readme",{
       method: 'POST',
       headers: {
           'Content-Type': 'application/json',
       },
-      body: JSON.stringify({path: "/data/readme.json", content: data})
+      body: JSON.stringify(data)
   })
   const val = await res.json();
   console.log(val);
@@ -110,16 +115,17 @@ function Loader({id}) {
         },
       });
       const data = await res.json();
-      const repoDesc = data.description;
-      const repoLang = data.language;
-      const repoUrl = data.homepage;
+      const repoId =  data.id;
+      const repoDesc =  data.description;
+      const repoLang =  data.language;
+      const repoUrl =  data.homepage;
       const prompt = `Create a Readme.md file for a github project with title ${repoName} and description ${repoDesc}, built mostly using ${repoLang} language. The project is hosted at ${repoUrl}`;
       setCurrProcess(`Finding package.json`);
       const packageJson = await getPackage(repoName);
       setCurrProcess(`Generating Readme Text`);
       const readmeText = await getReadme(prompt);
       setCurrProcess(`Saving Readme Text`);
-      saveReadme(repoName,readmeText);
+      saveReadme(repoId,repoName,readmeText);
     }
     setCurrProcess(`Redirecting to Editor..`);
     setTimeout(() => {router.push(`/user/${id}/editor`)}, 1000);
@@ -127,8 +133,7 @@ function Loader({id}) {
 
   
   useEffect(() => {
-    const fxn = () =>{fetchRepos();}
-    fxn();
+    const fxn = fetchRepos;
     return () => {fxn()};
   },[])
 

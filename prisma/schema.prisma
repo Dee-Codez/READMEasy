@@ -13,14 +13,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model readme {
-  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  repoName String
-  text String
-}
-
 model user {
   id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name String
   data Json?
+  createdAt DateTime @default(now())
+  readme readme[]
+}
+
+model readme {
+  userID String @db.Uuid
+  repoID Int @id
+  repoName String
+  readmeText String
+  user user @relation(fields: [userID], references: [id])
 }

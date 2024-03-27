@@ -99,12 +99,12 @@ const GithubRepos = ({id}) => {
   const nextPage = async() => {
     let selectedReposArray = Array.from(selectedRepos);
     console.log(selectedReposArray);
-    await fetch("/api/files",{
+    await fetch("/api/db/user",{
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({path: "/data/url.json", content: selectedReposArray})
+            body: JSON.stringify({name: id, content: selectedReposArray})
         })
     router.push(`/user/${id}/repo`)
   }

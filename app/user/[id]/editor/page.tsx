@@ -1,4 +1,6 @@
 import Editor from "@/components/Editor";
+import { StyledEngineProvider } from '@mui/material/styles';
+
 
 type nameProps = {
   params: {
@@ -10,7 +12,9 @@ function page({params} : nameProps) {
   
   return (
     <>
+    <StyledEngineProvider injectFirst>
       <Editor id={params.id}/>
+    </StyledEngineProvider>
     </>
   )
 }

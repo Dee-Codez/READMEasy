@@ -55,10 +55,10 @@ function ReadmeText({repo,mode,list}) {
               <div className="relative min-w-[70vw] my-5 mb-20 mx-16 bg-[#0d1117] rounded-2xl p-5">
                 <button 
                     onClick={copyText} 
-                    className="absolute flex items-center  gap-2 top-3 z-20 right-3 p-2 bg-blue-900 rounded-md text-white hover:bg-blue-600 hover:text-white transition-all duration-75"
+                    className="absolute flex items-center gap-2 top-5 z-20 right-5 p-2 bg-indigo-900 rounded-md text-white hover:bg-indigo-600 hover:text-white transition-all duration-75"
                 >
                     <div className="flex lg:hidden"><IoMdCopy size={30} /></div>
-                    <div className="hidden lg:flex items-center gap-2">Copy Text<IoMdCopy size={30} /></div>
+                    <div className="hidden lg:flex items-center gap-2">Copy Markdown<IoMdCopy size={30} /></div>
                 </button>
                   {(mode == 'Preview') ? <div className="flex flex-col ">
                     {/* <div id="test_document" className="flex flex-col gap-5 leading-8" dangerouslySetInnerHTML={sanitizedFile()}/> */}
@@ -96,7 +96,7 @@ function ReadmeText({repo,mode,list}) {
             }
               </div>
             </div>
-            <ToastContainer />
+            <ToastContainer autoClose={1500} theme="dark" draggable closeOnClick />
         </>)
     }
   

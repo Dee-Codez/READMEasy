@@ -1,4 +1,6 @@
 import Githubinput from "../components/Githubinput";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Home() {
   return (
@@ -11,6 +13,7 @@ export default function Home() {
           <Githubinput />
         </div>
       </div>
+      <ToastContainer autoClose={2000} theme="dark" draggable closeOnClick/>
     </main>
   );
 }

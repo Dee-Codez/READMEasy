@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from "react"
 import { MdOutlineNavigateNext } from "react-icons/md";
- 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 import { useRouter } from 'next/navigation'
 
 const Githubinput = () => {
@@ -13,29 +15,62 @@ const Githubinput = () => {
 
     const GITHUB_KEY = process.env.GITHUB_PAT;
     
-    const GitCheck = async(e) => {
+    // const GitCheck = async(e) => {
+    //     e.preventDefault();
+
+    //     const res = await fetch(`https://api.github.com/users/${githubId}`,{
+    //         method: 'GET',
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //             'Authorization': `${GITHUB_KEY}`
+    //         },
+    //     });
+    //     const data = await res.json();
+    //     if(data.message === "Not Found") {
+    //         setValidGit(false);
+    //         setTimeout(() => {
+    //             setValidGit(null);
+    //         }, 5000);
+    //     } else {
+    //         setValidGit(true);
+    //         console.log(data);
+    //         router.push(`/user/${githubId}`);
+    //     }
+    // }
+
+    const GitCheck = (e) => {
         e.preventDefault();
-        const res = await fetch(`https://api.github.com/users/${githubId}`,{
+    
+        const fetchUser = fetch(`https://api.github.com/users/${githubId}`,{
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `${GITHUB_KEY}`
             },
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.message === "Not Found") {
+                setValidGit(false);
+                setTimeout(() => {
+                    setValidGit(null);
+                }, 5000);
+                throw new Error("GitHub user not found");
+            } else {
+                setValidGit(true);
+                router.push(`/user/${githubId}`);
+            }
         });
-        const data = await res.json();
-        if(data.message === "Not Found") {
-            setValidGit(false);
-            setTimeout(() => {
-                setValidGit(null);
-            }, 5000);
-        } else {
-            setValidGit(true);
-            console.log(data);
-            router.push(`/user/${githubId}`);
-        }
+    
+        toast.promise(
+            fetchUser,
+            {
+                pending: 'Checking GitHub user...',
+                success: 'GitHub user found',
+                error: 'GitHub user not found'
+            }
+        );
     }
-
-
 
     const handleIdChange = (e) => {
         setGithubId(e.target.value);

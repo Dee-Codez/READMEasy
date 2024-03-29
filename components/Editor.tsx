@@ -7,7 +7,8 @@ import { ToggleButton } from '@mui/material';
 import { ReadmeText } from "./ReadmeText";
 import { IoMenu } from "react-icons/io5";
 import { IoIosCloseCircleOutline } from "react-icons/io";
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 function Editor({id}) {
@@ -66,11 +67,11 @@ function Editor({id}) {
             </div>
             <div className="flex flex-col flex-grow ">
                 <div className="block xl:hidden absolute top-0 left-0">
-                    <div className="absolute top-10 left-6 bottom-0">
+                    <div className="absolute top-8 left-6 bottom-0">
                         {sidebarOpen ? (
-                            <IoIosCloseCircleOutline size={25} onClick={toggleSidebar} />
+                            <IoIosCloseCircleOutline size={35} onClick={toggleSidebar} />
                             ) : (
-                            <IoMenu size={25} onClick={toggleSidebar} />
+                            <IoMenu size={35} onClick={toggleSidebar} />
                         )}
                         
                     </div>
@@ -118,6 +119,7 @@ function Editor({id}) {
                 
             </div>
         </div>
+        <ToastContainer  autoClose={1500} theme="dark" draggable closeOnClick/>
     </div>
   );
 }

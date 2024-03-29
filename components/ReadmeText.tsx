@@ -1,10 +1,10 @@
 "use client"
 
 import { useEffect,useState } from "react";
-import Markdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
-import { Remarkable } from 'remarkable';
-import DOMPurify from "dompurify";
+// import Markdown from 'react-markdown'
+// import remarkGfm from 'remark-gfm'
+// import { Remarkable } from 'remarkable';
+// import DOMPurify from "dompurify";
 import MDEditor from '@uiw/react-md-editor';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -14,18 +14,16 @@ import { IoMdCopy } from "react-icons/io";
 
 
 function ReadmeText({repo,mode,list}) {
-    var md = new Remarkable('full', {
-        html: true,
-        typographer: true,
-      });
-    const hljs = require('highlight.js');
-    console.log(list);
+    // var md = new Remarkable('full', {
+    //     html: true,
+    //     typographer: true,
+    //   });
+    // const hljs = require('highlight.js');
     const selRepo = list.find((item) => item.repoID === repo);
-    console.log(selRepo);
 
     
     if (!selRepo) {
-        return null; // Or return some fallback UI
+        return ""; // Or return some fallback UI
     }
 
     const [value, setValue] = useState(selRepo.readmeText);
@@ -48,14 +46,14 @@ function ReadmeText({repo,mode,list}) {
 
 
     if(selRepo){
-        const txt = md.render(selRepo.readmeText);
-        const sanitizedFile = () => ({ __html: DOMPurify.sanitize(txt) });
+        // const txt = md.render(selRepo.readmeText);
+        // const sanitizedFile = () => ({ __html: DOMPurify.sanitize(txt) });
         return (<>
             <div>
               <div className="relative min-w-[70vw] my-5 mb-20 mx-6 md:mx-16 bg-[#0d1117] rounded-2xl p-5">
                 <button 
                     onClick={copyText} 
-                    className="absolute flex items-center gap-2 top-[1.3rem] z-20 right-6 px-2 bg-indigo-900 rounded-md text-white hover:bg-indigo-600 hover:text-white transition-all duration-75"
+                    className="absolute flex items-center gap-2 top-[1.3rem] z-20 right-6 px-2 bg-indigo-900/50 lg:bg-indigo-900 rounded-md text-white hover:bg-indigo-600 hover:text-white transition-all duration-75"
                 >
                     <div className="flex p-1 lg:hidden"><IoMdCopy size={25} /></div>
                     <div className="hidden lg:flex items-center gap-2">Copy Markdown<IoMdCopy size={20} /></div>
@@ -96,7 +94,7 @@ function ReadmeText({repo,mode,list}) {
             }
               </div>
             </div>
-            <ToastContainer autoClose={1500} theme="dark" draggable closeOnClick/>
+            
         </>)
     }
   

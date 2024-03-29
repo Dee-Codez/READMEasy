@@ -26,7 +26,6 @@ function Loader({id}) {
             },
         });
         const data = await res.json();
-        console.log(data);
         userId = data.id;
         setUserId(userId);
         localStorage.setItem('userId',userId);
@@ -37,7 +36,6 @@ function Loader({id}) {
 
   const saveReadme = async(repoId,repoName,readmeText) => {
     const data = {userid: userId ,repoid: repoId, name: repoName, content: readmeText};
-    console.log(data);
     const res = await fetch("/api/db/readme",{
       method: 'POST',
       headers: {
@@ -46,7 +44,6 @@ function Loader({id}) {
       body: JSON.stringify(data)
   })
   const val = await res.json();
-  console.log(val);
   }
 
   const getPackage = async(repoName,path="/") => {
@@ -62,6 +59,8 @@ function Loader({id}) {
       if(i.name === 'package.json') {
         pkg = i;
         setPkg(pkg);
+        console.log(pkg);
+        const pkg_url = pkg.download_url;
         const PkgData = {name : repoName, data: pkg}
         const existingRepo = [...repoPackage].find(repo => repo.name === repoName);
         if (!existingRepo) {
@@ -82,7 +81,6 @@ function Loader({id}) {
         }
       }
     }
-    return data;
   }
 
   const getReadme = async(text) => {
@@ -122,11 +120,13 @@ function Loader({id}) {
       const prompt = `Create a Readme.md file for a github project with title ${repoName} and description ${repoDesc}, built mostly using ${repoLang} language. The project is hosted at ${repoUrl}`;
       setCurrProcess(`Finding package.json`);
       const packageJson = await getPackage(repoName);
+      
       setCurrProcess(`Generating Readme Text`);
       const readmeText = await getReadme(prompt);
       setCurrProcess(`Saving Readme Text`);
       saveReadme(repoId,repoName,readmeText);
     }
+    console.log(repoPackage);
     setCurrProcess(`Redirecting to Editor..`);
     setTimeout(() => {router.push(`/user/${id}/editor`)}, 1000);
   }

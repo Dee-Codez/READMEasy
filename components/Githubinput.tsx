@@ -57,8 +57,8 @@ const Githubinput = () => {
                 }, 5000);
                 throw new Error("GitHub user not found");
             } else {
-                setValidGit(true);
                 router.push(`/user/${githubId}`);
+                setValidGit(true);
             }
         });
     

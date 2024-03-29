@@ -37,7 +37,7 @@ function Editor({id}) {
     <div>
         <div className="flex">
         
-            <div className="min-w-[15vw] h-[150vh] bg-indigo-900/20">
+            <div className="min-w-[15vw] min-h-[100vh] bg-indigo-900/20">
                 <div className="flex flex-col gap-5 mt-5">
                     {readme.map((item) => {
                         if(item.repoID === selectedRepo){return (
@@ -60,10 +60,13 @@ function Editor({id}) {
                     <div className="flex mt-5 rounded-full w-fit bg-indigo-900/20 gap-3 py-2 px-3">
                         {mode === 'Preview' ? (<>
                             <div className="flex justify-center items-center p-3 bg-white/20 rounded-full transition-all">Preview</div>
-                            <div className="flex justify-center items-center cursor-pointer pr-2" onClick={()=>{setMode('Markdown')}}>Markdown</div>
+                            <div className="flex flex-col justify-center items-center cursor-pointer pr-2" onClick={()=>{setMode('Markdown')}}>
+                                <p>Editor</p>
+                                
+                            </div>
                         </>):(<>
                             <div className="flex justify-center items-center cursor-pointer pl-2" onClick={()=>{setMode('Preview')}}>Preview</div>
-                            <div className="flex justify-center items-center p-3 bg-white/20 rounded-full transition-all">Markdown</div>
+                            <div className="flex flex-col justify-center items-center p-3 bg-white/20 rounded-full transition-all">Editor</div>
                         </>)}
                     </div>
                     <div className="mt-10">

@@ -2,8 +2,6 @@
 
 import { useState,useEffect } from "react";
 import { FloatingNav } from "./ui/floating-navbar";
-import { ToggleButtonGroup } from '@mui/material';
-import { ToggleButton } from '@mui/material';
 import { ReadmeText } from "./ReadmeText";
 import { IoMenu } from "react-icons/io5";
 import { IoIosCloseCircleOutline } from "react-icons/io";

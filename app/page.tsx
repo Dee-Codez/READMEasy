@@ -3,8 +3,9 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 export default function Home() {
+
   return (
-    <main>
+    <main className="z-20">
       <div className="flex pt-10 justify-center">
           <img src="/READMEasy.png" alt="" className="w-[300px] md:h-[10vw] md:w-[40vw]" />
         </div>

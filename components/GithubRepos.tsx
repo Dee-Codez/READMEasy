@@ -32,7 +32,6 @@ const GithubRepos = ({id}) => {
           } else {
             newSelectedRepos.add(repoData);
           }
-          console.log(newSelectedRepos);
           return newSelectedRepos;
         });
       };
@@ -47,7 +46,6 @@ const GithubRepos = ({id}) => {
           selectedRepos = new Set(allRepoData);
           setSelectedRepos(selectedRepos);
         }
-        console.log(selectedRepos);
       };
       
 

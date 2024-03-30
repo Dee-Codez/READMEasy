@@ -15,6 +15,7 @@ function Loader({id}) {
   let [repoPackage, setRepoPackage] = useState(new Set());
   const [currProcess, setCurrProcess] = useState();
   let [userId, setUserId] = useState();
+  let [depList, setDepList] = useState("");
 
   const router = useRouter();
 
@@ -46,7 +47,7 @@ function Loader({id}) {
   const val = await res.json();
   }
 
-  const getPackage = async(repoName,path="/") => {
+  const getPackage = async (repoName,path="/", depth = 0) => {
     const res = await fetch(`https://api.github.com/repos/${id}/${repoName}/contents/${path}`, {
       method: 'GET',
       headers: {
@@ -55,32 +56,42 @@ function Loader({id}) {
       },
     });
     const data = await res.json();
-    for await (const i of data) {
+    for await (const i of data){
       if(i.name === 'package.json') {
         pkg = i;
         setPkg(pkg);
-        console.log(pkg);
         const pkg_url = pkg.download_url;
-        const PkgData = {name : repoName, data: pkg}
-        const existingRepo = [...repoPackage].find(repo => repo.name === repoName);
-        if (!existingRepo) {
-          repoPackage = repoPackage.add(PkgData);
-          setRepoPackage(repoPackage);
-        }else if(existingRepo){
-          return null;
-        }
-        return pkg;
+        console.log(pkg_url);
+        setCurrProcess(`Getting Dependency Data`);
+        const dependency = await fetch("/api/scrape/package", {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({url: pkg_url})
+        })
+        const dep = await dependency.json();
+        return dep;
       }
       else if(i.type === 'dir') {
-        if(folderDepth<2) {
-          getPackage(repoName,i.path);
+        if(depth<2) {
           folderDepth=folderDepth+1;
           setFolderDepth(folderDepth);
-        }else{
-          return null;
+          const res = await getPackage(repoName,i.path,folderDepth);
+          if(res && res!=depList){
+            depList = depList+"\n"+res.substring(5);
+            setDepList(depList);
+          }
+        }else if(depth>=2){
+          folderDepth=0;
+          setFolderDepth(folderDepth);
+          continue;
         }
+      }else{
+        continue;
       }
     }
+    return depList;
   }
 
   const getReadme = async(text) => {
@@ -99,6 +110,8 @@ function Loader({id}) {
     let k=1;
     setCurrProcess(`Getting Deployement URLs`);
     for await (const i of repoList) {
+      depList = "";
+      setDepList(depList);
       folderDepth=0;
       let repoName = i.name;
       setFolderDepth(folderDepth);
@@ -117,16 +130,54 @@ function Loader({id}) {
       const repoDesc =  data.description;
       const repoLang =  data.language;
       const repoUrl =  data.homepage;
-      const prompt = `Create a Readme.md file for a github project with title ${repoName} and description ${repoDesc}, built mostly using ${repoLang} language. The project is hosted at ${repoUrl}`;
       setCurrProcess(`Finding package.json`);
       const packageJson = await getPackage(repoName);
-      
+      console.log(packageJson);
       setCurrProcess(`Generating Readme Text`);
-      const readmeText = await getReadme(prompt);
+      // const deps = [];
+      const dependencies = depList.split("\n");
+      // dependencies.forEach((dep) => {
+      //   let foundSimilar = false;
+      //   deps.forEach((d) => {
+      //     if(d.includes(dep) || dep.includes(d)) {
+      //       console.log(`Found Similar ${dep} and ${d}`);
+      //       foundSimilar = true;
+      //       return;
+      //     }         
+      //   });
+      //   if (!foundSimilar) {
+      //     deps.push(dep);
+      //   }
+      // });
+      let depCounts = {};
+      let ndepList = [];
+      for(let i=1;i<dependencies.length;i++){
+        let foundSimilar = false;
+        depCounts[dependencies[i]] = (depCounts[dependencies[i]] || 0) + 1;
+        for(let j=1;j<dependencies.length;j++){
+          if(i !== j && (dependencies[i].includes(dependencies[j]) || dependencies[j].includes(dependencies[i]))){
+            foundSimilar = true;
+              depCounts[dependencies[i]]++;
+              depCounts[dependencies[j]]++;
+            break;
+          }
+        }
+        if(!foundSimilar){
+          ndepList.push(dependencies[i]);
+        }
+      }
+      let depCountsArray = Object.entries(depCounts);
+      depCountsArray = depCountsArray.filter(([dep, count]) => count > 2 || (!dep.includes('-') && !dep.includes('/')));
+      depCountsArray.sort((a, b) => b[1] - a[1]);    
+      let top5Deps = depCountsArray.slice(0, 5);
+      const depStringArr = depCountsArray.map(([dep, count]) => dep).join(",")
+      console.log(depStringArr);
+      const prompt = `Create a detailed Readme.md file for a github project with title ${repoName} and description ${repoDesc}, built mostly using ${repoLang} language ${packageJson && `with following dependencies : ${depStringArr}`}. The project is hosted at ${repoUrl}`;
+      console.log(prompt);
+      const readmeText = await getReadme(prompt)
       setCurrProcess(`Saving Readme Text`);
       saveReadme(repoId,repoName,readmeText);
     }
-    console.log(repoPackage);
     setCurrProcess(`Redirecting to Editor..`);
     setTimeout(() => {router.push(`/user/${id}/editor`)}, 1000);
   }

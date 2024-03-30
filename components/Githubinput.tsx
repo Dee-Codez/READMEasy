@@ -69,7 +69,7 @@ const Githubinput = () => {
     
       function closeModal() {
         setIsOpen(false);
-        setTimeout(() => {setIsLoading(false);},4000)
+        setTimeout(() => {setIsLoading(false);},3200)
       }
 
       const handleNew = () => {
@@ -82,6 +82,18 @@ const Githubinput = () => {
         closeModal();
       }
 
+      const fetchDBUser = async() => {
+        const res = await fetch(`/api/db/user?name=${githubId}`,{
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            const data = await res.json();
+            console.log(data);
+            return data;
+      }
+
     const GitCheck = async (e) => {
         e.preventDefault();
         setIsLoading(true);
@@ -89,11 +101,10 @@ const Githubinput = () => {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `${GITHUB_KEY}`
             },
         })
         .then(res => res.json())
-        .then(data => {
+        .then(async data => {
             if(data.message === "Not Found") {
                 setValidGit(false);
                 setIsLoading(false);
@@ -104,9 +115,14 @@ const Githubinput = () => {
             } 
             else {
                 setUser(data);
-                openModal();
-                // router.push(`/user/${githubId}`);
                 setValidGit(true);
+                const existUser = await fetchDBUser();
+                if(existUser){
+                    openModal();
+                }
+                else {
+                    router.push(`/user/${githubId}`); 
+                }                
             }
         });
     
@@ -121,7 +137,7 @@ const Githubinput = () => {
     }
 
     const handleIdChange = (e) => {
-        setGithubId(e.target.value);
+        setGithubId(e.target.value.toLowerCase());
     }
 
 

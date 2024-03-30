@@ -7,7 +7,7 @@ import { IoMenu } from "react-icons/io5";
 import { IoIosCloseCircleOutline } from "react-icons/io";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import { HomeBTN } from "./HomeBTN";
 
 function Editor({id}) {
 
@@ -57,7 +57,8 @@ function Editor({id}) {
     }, []);
   
   return (
-    <div>
+    <div className="relative">
+        <div className="absolute top-7 right-[6vw]"><HomeBTN/></div>
         <div className="flex">
         
             <div className="min-w-[270px] min-h-[100vh] hidden xl:block  bg-indigo-900/20">

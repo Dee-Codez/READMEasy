@@ -33,9 +33,10 @@ export async function POST(req: NextRequest) {
     await npage.waitForSelector('input[type="checkbox"]');
     await npage.evaluate(() => {
         const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-        checkboxes.forEach(checkbox => {
-            if (checkbox.checked) {
-                checkbox.click();
+        checkboxes.forEach((checkbox) => {
+            const inputCheckbox = checkbox as HTMLInputElement;
+            if (inputCheckbox.checked) {
+                inputCheckbox.click();
             }
         });
     });
@@ -52,8 +53,8 @@ export async function POST(req: NextRequest) {
     await npage.waitForSelector('span');
     const spanContent = await npage.evaluate(() => {
         const spans = Array.from(document.querySelectorAll('span'));
-        const nameSpan = spans.find(span => span.textContent.includes('name'));
-        return nameSpan.textContent ;
+        const nameSpan = spans.find(span => span.textContent && span.textContent.includes('name'));
+        return nameSpan ? nameSpan.textContent : '';
     });
 
     // const spanId = 'Main_outputBox__6XzB3 MuiBox-root css-0';

@@ -14,7 +14,7 @@ import { NextRequest, NextResponse } from 'next/server';
     return NextResponse.json({ response: res})
 }
 
-  async function runChat(userInput) {
+  async function runChat(userInput: any) {
     const genAI = new GoogleGenerativeAI(API_KEY);
     const model = genAI.getGenerativeModel({ model: MODEL_NAME });
   

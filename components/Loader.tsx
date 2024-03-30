@@ -35,7 +35,7 @@ function Loader({id}) {
         processRepo();
   }
 
-  const saveReadme = async(repoId,repoName,readmeText) => {
+  const saveReadme = async(repoId: any,repoName: any,readmeText: any) => {
     const data = {userid: userId ,repoid: repoId, name: repoName, content: readmeText};
     const res = await fetch("/api/db/readme",{
       method: 'POST',
@@ -46,7 +46,7 @@ function Loader({id}) {
   })
   }
 
-  const getPackage = async (repoName,path="/", depth = 0) => {
+  const getPackage = async (repoName: any,path="/", depth = 0) => {
     const res = await fetch(`https://api.github.com/repos/${id}/${repoName}/contents/${path}`, {
       method: 'GET',
       headers: {
@@ -92,7 +92,7 @@ function Loader({id}) {
     return depList;
   }
 
-  const getReadme = async(text) => {
+  const getReadme = async(text: string) => {
     const res = await fetch(`/api/googleai`, {
       method: 'POST',
       headers: {

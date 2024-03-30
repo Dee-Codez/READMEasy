@@ -8,6 +8,7 @@ import Modal from 'react-modal';
 import { MdEditSquare } from "react-icons/md";
 import { MdCreateNewFolder } from "react-icons/md";
 import { InfinitySpin } from 'react-loader-spinner'
+import { GetServerSideProps } from 'next';
 
 import { useRouter } from 'next/navigation'
 
@@ -83,7 +84,7 @@ const Githubinput = () => {
 
     const GitCheck = async (e) => {
         e.preventDefault();
-    
+        setIsLoading(true);
         const fetchUser = fetch(`https://api.github.com/users/${githubId}`,{
             method: 'GET',
             headers: {
@@ -101,7 +102,6 @@ const Githubinput = () => {
                 throw new Error("GitHub user not found");
             } 
             else {
-                setIsLoading(true);
                 setUser(data);
                 openModal();
                 // router.push(`/user/${githubId}`);

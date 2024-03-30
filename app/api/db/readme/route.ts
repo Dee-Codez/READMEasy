@@ -4,7 +4,7 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient();
 
 export async function GET(req: NextRequest) {
-    const id = req.nextUrl.searchParams.get('id');
+    const id = req.nextUrl.searchParams.get('id') || "";
     const user = await prisma.readme.findMany({
         where: {
             userID: id,

@@ -6,6 +6,8 @@ const prisma = new PrismaClient();
 
 export async function GET(req: NextRequest) {
   const name = req.nextUrl.searchParams.get('name');
+  // const deleteFlag = req.nextUrl.searchParams.get('delete');
+
   const user = await prisma.user.findFirst({
     where: {
       name: name,
@@ -14,6 +16,18 @@ export async function GET(req: NextRequest) {
       createdAt: 'desc',
     },
   });
+  // if (deleteFlag === 'true' && user) {
+  //   await prisma.readme.deleteMany({
+  //     where: {
+  //       userID: user.id,
+  //     },
+  //   });
+  //   await prisma.user.delete({
+  //     where: {
+  //       id: user.id,
+  //     },
+  //   });
+  // }
   return NextResponse.json(user);
 }
 

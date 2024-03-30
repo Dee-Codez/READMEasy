@@ -1,11 +1,13 @@
 import Githubinput from "../components/Githubinput";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Modal from 'react-modal';
+
 
 export default function Home() {
 
   return (
-    <main className="z-20">
+    <main id="root" className="z-20">
       <div className="flex pt-10 justify-center">
           <img src="/READMEasy.png" alt="" className="w-[300px] md:h-[10vw] md:w-[40vw]" />
         </div>

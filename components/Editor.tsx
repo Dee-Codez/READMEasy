@@ -16,6 +16,7 @@ function Editor({id}) {
     let [userId, setUserId] = useState();
     let [readme, setReadme] = useState([]);
     let[selectedRepo, setSelectedRepo] = useState();
+    let[loading, setLoading] = useState(true);
 
     const [mode, setMode] = useState('Preview');
 
@@ -37,10 +38,24 @@ function Editor({id}) {
         setSelectedRepo(selectedRepo);
     }
 
-    useEffect(() => {
-        userId = localStorage.getItem("userId");
+    const getUserID = async() => {
+        const response = await fetch(`/api/db/user/?name=${id}`);
+        const data = await response.json();
+        userId = data.id;
         setUserId(userId);
-        fetchReadme();
+    }
+
+    useEffect(() => {
+        const data = async() =>{
+            await getUserID();
+            await fetchReadme();
+            loading = false;
+            setLoading(loading);
+        }
+        data();
+        return () => {
+            data();
+        }
     }, []);
   
   return (
@@ -49,6 +64,7 @@ function Editor({id}) {
         
             <div className="min-w-[270px] min-h-[100vh] hidden xl:block  bg-indigo-900/20">
                 <div className="flex flex-col gap-5 mt-5">
+                    {loading && <div className="flex justify-center items-center h-screen w-full"><h1>Loading Repos...</h1></div>}
                     {readme.map((item) => {
                         if(item.repoID === selectedRepo){return (
                             <div key={item.repoID} className="flex transition-all cursor-pointer rounded-3xl mr-2 bg-white/5 justify-center p-5 w-full">
@@ -79,6 +95,8 @@ function Editor({id}) {
                         transform transition-transform duration-200 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-[120%]'}
                         xl:translate-x-0 bg-slate-950/90 backdrop-blur-sm`}>
                             <div className="flex flex-col gap-5 mt-5">
+                            {loading && <div className="flex justify-center items-center h-screen w-full"><h1 className="text-white">Loading Repos...</h1></div>}
+
                                 {readme.map((item) => {
                                 if(item.repoID === selectedRepo){return (
                                     <div key={item.repoID} className="flex transition-all cursor-pointer rounded-3xl mr-2 bg-white/5 justify-center p-5 w-full">
@@ -100,7 +118,7 @@ function Editor({id}) {
             </div>
             <div className="flex flex-grow">
                  <div className="flex flex-col flex-grow items-center" >
-                    <div className="flex mt-5 rounded-full w-fit bg-indigo-900/20 gap-3 py-2 px-3">
+                    <div className="flex mt-5 rounded-full bg-indigo-900/20 gap-3 py-2 px-3">
                         {mode === 'Preview' ? (<>
                             <div className="flex justify-center items-center p-3 bg-white/20 rounded-full transition-all">Preview</div>
                             <div className="flex flex-col justify-center items-center cursor-pointer pr-2" onClick={()=>{setMode('Markdown')}}>
@@ -113,6 +131,8 @@ function Editor({id}) {
                         </>)}
                     </div>
                     <div className="mt-10">
+                        {loading && <div className="flex justify-center items-center h-screen w-full"><h1 className="text-white">Loading Readme...</h1></div>}
+
                         <ReadmeText list={readme} repo={selectedRepo} mode={mode}/>
                     </div>  
                 </div>

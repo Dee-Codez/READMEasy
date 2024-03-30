@@ -16,7 +16,7 @@ function Loader({id}) {
   const [currProcess, setCurrProcess] = useState();
   let [userId, setUserId] = useState();
   let [depList, setDepList] = useState("");
-
+  let [progress, setProgress] = useState(0);
   const router = useRouter();
 
   const fetchRepos = async() => {
@@ -44,7 +44,6 @@ function Loader({id}) {
       },
       body: JSON.stringify(data)
   })
-  const val = await res.json();
   }
 
   const getPackage = async (repoName,path="/", depth = 0) => {
@@ -61,7 +60,6 @@ function Loader({id}) {
         pkg = i;
         setPkg(pkg);
         const pkg_url = pkg.download_url;
-        console.log(pkg_url);
         setCurrProcess(`Getting Dependency Data`);
         const dependency = await fetch("/api/scrape/package", {
           method: 'POST',
@@ -108,8 +106,9 @@ function Loader({id}) {
 
   const processRepo = async() => {
     let k=1;
-    setCurrProcess(`Getting Deployement URLs`);
     for await (const i of repoList) {
+      setProgress(0);
+      setCurrProcess(`Getting Deployement URLs`);
       depList = "";
       setDepList(depList);
       folderDepth=0;
@@ -119,6 +118,7 @@ function Loader({id}) {
       currRepo = new Set([repoData]);
       setCurrRepo(currRepo);
       k++;
+      
       const res = await fetch(`https://api.github.com/repos/${id}/${repoName}`, {
         method: 'GET',
         headers: {
@@ -131,9 +131,12 @@ function Loader({id}) {
       const repoLang =  data.language;
       const repoUrl =  data.homepage;
       setCurrProcess(`Finding package.json`);
+      if(progress<10) {
+        progress = 10;
+        setProgress(progress);
+      }
       const packageJson = await getPackage(repoName);
-      console.log(packageJson);
-      setCurrProcess(`Generating Readme Text`);
+      
       // const deps = [];
       const dependencies = depList.split("\n");
       // dependencies.forEach((dep) => {
@@ -154,7 +157,7 @@ function Loader({id}) {
       for(let i=1;i<dependencies.length;i++){
         let foundSimilar = false;
         depCounts[dependencies[i]] = (depCounts[dependencies[i]] || 0) + 1;
-        for(let j=1;j<dependencies.length;j++){
+        for(let j=i+1;j<dependencies.length;j++){
           if(i !== j && (dependencies[i].includes(dependencies[j]) || dependencies[j].includes(dependencies[i]))){
             foundSimilar = true;
               depCounts[dependencies[i]]++;
@@ -167,16 +170,26 @@ function Loader({id}) {
         }
       }
       let depCountsArray = Object.entries(depCounts);
-      depCountsArray = depCountsArray.filter(([dep, count]) => count > 2 || (!dep.includes('-') && !dep.includes('/')));
+      depCountsArray = depCountsArray.filter(([dep, count]) => count > 2 && (!dep.includes('-') && !dep.includes('/')));
       depCountsArray.sort((a, b) => b[1] - a[1]);    
       let top5Deps = depCountsArray.slice(0, 5);
-      const depStringArr = depCountsArray.map(([dep, count]) => dep).join(",")
-      console.log(depStringArr);
-      const prompt = `Create a detailed Readme.md file for a github project with title ${repoName} and description ${repoDesc}, built mostly using ${repoLang} language ${packageJson && `with following dependencies : ${depStringArr}`}. The project is hosted at ${repoUrl}`;
-      console.log(prompt);
+      const depStringArr = depCountsArray.map(([dep, count]) => dep).join(",");
+      console.log(depCountsArray);
+      if(progress<60){
+        progress = 60;
+        setProgress(progress);
+      }else if(progress>60){
+      }
+      const prompt = `Create a detailed Readme.md file for a github project with title ${repoName} and description ${repoDesc}, built mostly using ${repoLang} language ${depStringArr && `with following dependencies : ${depStringArr}`}. The project is hosted at ${repoUrl}`;
+      setCurrProcess(`Generating Readme Text`);
       const readmeText = await getReadme(prompt)
+      if(progress<90){
+        progress = 90;
+        setProgress(progress);
+      }
       setCurrProcess(`Saving Readme Text`);
       saveReadme(repoId,repoName,readmeText);
+      setProgress(100);
     }
     setCurrProcess(`Redirecting to Editor..`);
     setTimeout(() => {router.push(`/user/${id}/editor`)}, 1000);
@@ -185,17 +198,33 @@ function Loader({id}) {
   
   useEffect(() => {
     const fxn = fetchRepos;
-    return () => {fxn()};
+    fxn();
+    
   },[])
+
+  useEffect(() => {
+    const intrvl = setInterval(() => {
+      if(progress<85){
+        progress += 3;
+        setProgress(progress);
+      }else if(progress<100){
+        progress += 1;
+        setProgress(progress);
+      }
+    },1000);;
+    return () => {
+      clearInterval(intrvl);
+    };
+  },[progress])
 
 
   if(loading) return (<>
     <div className='relative w-[100vw]'>
-      <div className='flex flex-col gap-10 justify-center  items-center'>
+      <div className='flex flex-col gap-10 justify-center items-center'>
         <div className='flex justify-center items-center mt-32'>
           <Hourglass color="#00BFFF" height={80} width={80} />
         </div>
-        <div className='text-white mt-10 text-2xl animate-pulse'>Fetching/Processing Repositories..</div>
+        <div className='text-white mt-10 text-2xl text-center animate-pulse'>Fetching/Processing Repositories..</div>
         <div className='text-xl flex gap-3'>
           Working on 
           {[...currRepo].map((repo) => {
@@ -203,6 +232,16 @@ function Loader({id}) {
         </div>
         <div>
           {currProcess}
+        </div>
+        <div className='bg-white/20 mt-4 w-[80vw] max-w-[500px] overflow-hidden'>
+          <div className={`bg-[#0ea5e9] flex items-center justify-center h-7 text-center transition-all overflow-hidden`} style={{width: `${progress}%`}}>
+            <div className='hidden lg:flex'>
+            {(progress>=40)?`${progress}% Repo Processed`:`${progress}%`}
+            </div>
+            <div className='flex lg:hidden'>
+            {(progress>=60)?`${progress}% Repo Processed`:`${progress}%`}
+            </div>
+          </div>
         </div>
       </div>
     </div>

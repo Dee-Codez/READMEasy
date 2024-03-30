@@ -13,12 +13,15 @@ function Loader({id}) {
   let [pkg, setPkg] = useState(null);
   let [folderDepth, setFolderDepth] = useState(0);
   let [repoPackage, setRepoPackage] = useState(new Set());
-  const [currProcess, setCurrProcess] = useState();
+  const [currProcess, setCurrProcess] = useState<string | undefined>(undefined);
   let [userId, setUserId] = useState();
   let [depList, setDepList] = useState("");
   let [progress, setProgress] = useState(0);
   const router = useRouter();
-
+  interface Repo {
+    id: number;
+    name: string;
+  }
   const fetchRepos = async() => {
     const res = await fetch(`/api/db/user?name=${id}`,{
             method: 'GET',
@@ -170,10 +173,9 @@ function Loader({id}) {
         }
       }
       let depCountsArray = Object.entries(depCounts);
-      depCountsArray = depCountsArray.filter(([dep, count]) => count > 2 && (!dep.includes('-') && !dep.includes('/')));
-      depCountsArray.sort((a, b) => b[1] - a[1]);    
+      depCountsArray = depCountsArray.filter(([dep, count]: [string, number]) => count > 2 && (!dep.includes('-') && !dep.includes('/')));
       let top5Deps = depCountsArray.slice(0, 5);
-      const depStringArr = depCountsArray.map(([dep, count]) => dep).join(",");
+      const depStringArr = depCountsArray.map(([dep, count]: [string, number]) => dep).join(",");
       console.log(depCountsArray);
       if(progress<60){
         progress = 60;
@@ -222,12 +224,12 @@ function Loader({id}) {
     <div className='relative w-[100vw]'>
       <div className='flex flex-col gap-10 justify-center items-center'>
         <div className='flex justify-center items-center mt-32'>
-          <Hourglass color="#00BFFF" height={80} width={80} />
+          <Hourglass height={80} width={80} />
         </div>
         <div className='text-white mt-10 text-2xl text-center animate-pulse'>Fetching/Processing Repositories..</div>
         <div className='text-xl flex gap-3'>
           Working on 
-          {[...currRepo].map((repo) => {
+          {[...currRepo].map((repo: Repo) => {
           return(<div key={repo.id}>{repo.name} ({repo.id})</div>)})}
         </div>
         <div>

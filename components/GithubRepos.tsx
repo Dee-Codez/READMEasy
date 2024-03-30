@@ -52,12 +52,16 @@ const GithubRepos = ({id}) => {
       }
 
     const router = useRouter();
-    
+    interface Repo {
+        id: number;
+        name: string;
+        url: string;
+      }
     const toggleSelection = (repoId,repoName ,repoUrl) => {
-        setSelectedRepos(prevSelectedRepos => {
-          const newSelectedRepos = new Set([...prevSelectedRepos]);
+        setSelectedRepos((prevSelectedRepos: Set<Repo>) => {
+          const newSelectedRepos = new Set<Repo>([...prevSelectedRepos]);
           const repoData = { id: repoId,name: repoName ,url: repoUrl };
-      
+          
           const existingRepo = [...newSelectedRepos].find(repo => repo.id === repoId);
           if (existingRepo) {
             newSelectedRepos.delete(existingRepo);
@@ -103,7 +107,7 @@ const GithubRepos = ({id}) => {
         });
         let data = await res.json();
         data = data.sort((a, b) => {
-            return new Date(b.pushed_at) - new Date(a.pushed_at);
+            return new Date(b.pushed_at).getTime() - new Date(a.pushed_at).getTime();
         });
         setRepos(data);
         initialLoad = false;

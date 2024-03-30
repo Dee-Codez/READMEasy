@@ -50,15 +50,10 @@ function Loader({id}) {
   }
 
   const getPackage = async (repoName: any,path="/", depth = 0) => {
-    const res = await fetch(`https://api.github.com/repos/${id}/${repoName}/contents/${path}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${GITHUB_KEY}` 
-      },
-    });
-    const data = await res.json();
-    for await (const i of data){
+    const res = await fetch(`/api/github/jsondrill?id=${id}&reponame=${repoName}&path=${path}`);
+    let data = await res.json();
+    data = Array.isArray(data) ? data : [];
+    for (const i of data){
       if(i.name === 'package.json') {
         pkg = i;
         setPkg(pkg);
@@ -122,12 +117,7 @@ function Loader({id}) {
       setCurrRepo(currRepo);
       k++;
       
-      const res = await fetch(`https://api.github.com/repos/${id}/${repoName}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      const res = await fetch(`/api/github/fetchrepo?id=${id}&reponame=${repoName}`);
       const data = await res.json();
       const repoId =  data.id;
       const repoDesc =  data.description;
@@ -178,9 +168,11 @@ function Loader({id}) {
       const depStringArr = depCountsArray.map(([dep, count]: [string, number]) => dep).join(",");
       console.log(depCountsArray);
       if(progress<60){
-        progress = 60;
+        progress = 80;
         setProgress(progress);
       }else if(progress>60){
+        progress = 80;
+        setProgress(progress);
       }
       const prompt = `Create a detailed Readme.md file for a github project with title ${repoName} and description ${repoDesc}, built mostly using ${repoLang} language ${depStringArr && `with following dependencies : ${depStringArr}`}. The project is hosted at ${repoUrl}`;
       setCurrProcess(`Generating Readme Text`);
@@ -209,7 +201,7 @@ function Loader({id}) {
       if(progress<85){
         progress += 3;
         setProgress(progress);
-      }else if(progress<100){
+      }else if(progress<99){
         progress += 1;
         setProgress(progress);
       }

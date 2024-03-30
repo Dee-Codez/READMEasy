@@ -15,7 +15,6 @@ import { DNA } from 'react-loader-spinner'
 
 const GithubRepos = ({id}) => {
 
-  const GITHUB_KEY = process.env.NEXT_PUBLIC_GITHUB_PAT;
     const customStyles = {
         overlay: {
             backgroundColor: 'rgba(0, 0, 0, 0.5)', // Change the last value to adjust transparency
@@ -86,25 +85,13 @@ const GithubRepos = ({id}) => {
       
 
   const fetchGithub = async() => {
-    const res = await fetch(`https://api.github.com/users/${id}`,{
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${GITHUB_KEY}`
-            },
-        });
+    const res = await fetch(`/api/github/user?id=${id}`);
         const data = await res.json();
         setName(data.name);
   }
 
   const fetchRepos = async() => {
-    const res = await fetch(`https://api.github.com/users/${id}/repos`,{
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${GITHUB_KEY}`
-            },
-        });
+    const res = await fetch(`/api/github/repo?id=${id}`);
         let data = await res.json();
         data = data.sort((a, b) => {
             return new Date(b.pushed_at).getTime() - new Date(a.pushed_at).getTime();

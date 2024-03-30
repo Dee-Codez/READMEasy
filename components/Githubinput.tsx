@@ -96,6 +96,7 @@ const Githubinput = () => {
         .then(data => {
             if(data.message === "Not Found") {
                 setValidGit(false);
+                setIsLoading(false);
                 setTimeout(() => {
                     setValidGit(null);
                 }, 5000);

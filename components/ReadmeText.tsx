@@ -19,18 +19,19 @@ function ReadmeText({repo,mode,list}) {
     //     typographer: true,
     //   });
     // const hljs = require('highlight.js');
+    const [value, setValue] = useState("");
+
     const selRepo = list.find((item) => item.repoID === repo);
 
+    useEffect(() => {
+        if (selRepo) {
+            setValue(selRepo.readmeText);
+        }
+    },[selRepo]);
     
     if (!selRepo) {
         return ""; // Or return some fallback UI
     }
-
-    const [value, setValue] = useState(selRepo.readmeText);
-
-    useEffect(() => {
-        setValue(selRepo.readmeText);
-    },[selRepo]);
 
     const copyText = () => {
         if (selRepo) {

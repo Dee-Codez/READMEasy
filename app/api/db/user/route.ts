@@ -5,7 +5,7 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient();
 
 export async function GET(req: NextRequest) {
-  const name = req.nextUrl.searchParams.get('name');
+  const name = req.nextUrl.searchParams.get('name') || "";
   // const deleteFlag = req.nextUrl.searchParams.get('delete');
 
   const user = await prisma.user.findFirst({

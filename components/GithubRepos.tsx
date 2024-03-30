@@ -148,7 +148,7 @@ const GithubRepos = ({id}) => {
   }
 
   useEffect(() => {
-    setAllSelected(repos.length > 0 && repos.every(repo => [...selectedRepos].some(selectedRepo => selectedRepo.id === repo.id)));
+    setAllSelected(repos.length > 0 && repos.every(repo => [...selectedRepos].some((selectedRepo: Repo) => selectedRepo.id === repo.id)));
 }, [repos, selectedRepos]);
 
 
@@ -234,7 +234,7 @@ const GithubRepos = ({id}) => {
                                     }
                                 </div>
                                 <div className="flex mr-4 items-center">
-                                    <input className="appearance-none mr-2 w-[2.5em] h-[2.5em] border-2 border-blue-500 rounded-sm checked:bg-blue-800  checked:border-white bg-white/10" type="checkbox" checked={[...selectedRepos].some(selectedRepo => selectedRepo.id === repo.id)} onChange={() => toggleSelection(repo.id,repo.name,repo.homepage)} />
+                                    <input className="appearance-none mr-2 w-[2.5em] h-[2.5em] border-2 border-blue-500 rounded-sm checked:bg-blue-800  checked:border-white bg-white/10" type="checkbox" checked={[...selectedRepos].some((selectedRepo:Repo) => selectedRepo.id === repo.id)} onChange={() => toggleSelection(repo.id,repo.name,repo.homepage)} />
                                 </div>
                                 
                             </div>

@@ -1,6 +1,6 @@
-import puppeteer from 'puppeteer';
+import puppeteer from 'puppeteer-core'
 import { NextRequest, NextResponse } from 'next/server';
-import chromium from 'chrome-aws-lambda';
+import chromium from '@sparticuz/chromium';
 
 export async function GET() {
     return NextResponse.json("Hi, I am READMEasy Package.JSON Agent, I can extract dependecies for you.");
@@ -9,13 +9,13 @@ export async function GET() {
 export async function POST(req: NextRequest) {
     const body = await req.json();
     const url = body.url;
-    const browser = await chromium.puppeteer.launch({
+      const browser = await puppeteer.launch({
         args: [...chromium.args, "--hide-scrollbars", "--disable-web-security"],
         defaultViewport: chromium.defaultViewport,
-        executablePath: await chromium.executablePath,
-        headless: true,
+        executablePath: await chromium.executablePath(),
+        headless: chromium.headless,
         ignoreHTTPSErrors: true,
-      })
+    })
     const page = await browser.newPage();
     await page.goto(url);
     const pagedata = await page.evaluate(() => {

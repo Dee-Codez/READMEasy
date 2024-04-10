@@ -59,24 +59,26 @@ function Loader({id}) {
         setPkg(pkg);
         const pkg_url = pkg.download_url;
         setCurrProcess(`Getting Dependency Data`);
-        const dependency = await fetch("/api/scrape/package", {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({url: pkg_url})
-        })
-        const dep = await dependency.json();
-        return dep;
+        // const dependency = await fetch("/api/scrape/package", {
+        //   method: 'POST',
+        //   headers: {
+        //     'Content-Type': 'application/json',
+        //   },
+        //   body: JSON.stringify({url: pkg_url})
+        // })
+        const pkgdata = await fetch(pkg_url).then(res => res.json());
+        const devDep = Object.keys(pkgdata.devDependencies);
+        const dep = Object.keys(pkgdata.dependencies);
+        const allDep = [...devDep, ...dep];
+        return allDep;
       }
       else if(i.type === 'dir') {
         if(depth<2) {
           folderDepth=folderDepth+1;
           setFolderDepth(folderDepth);
           const res = await getPackage(repoName,i.path,folderDepth);
-          if(res && res!=depList){
-            depList = depList+"\n"+res.substring(5);
-            setDepList(depList);
+          if(res){
+            return res;
           }
         }else if(depth>=2){
           folderDepth=0;
@@ -90,7 +92,7 @@ function Loader({id}) {
     return depList;
   }
 
-  const getReadme = async(text: string) => {
+  const getGemini = async(text: string) => {
     const res = await fetch(`/api/googleai`, {
       method: 'POST',
       headers: {
@@ -131,7 +133,7 @@ function Loader({id}) {
       const packageJson = await getPackage(repoName);
       
       // const deps = [];
-      const dependencies = depList.split("\n");
+      const dependencies = packageJson;
       // dependencies.forEach((dep) => {
       //   let foundSimilar = false;
       //   deps.forEach((d) => {
@@ -147,26 +149,39 @@ function Loader({id}) {
       // });
       let depCounts = {};
       let ndepList = [];
-      for(let i=1;i<dependencies.length;i++){
-        let foundSimilar = false;
-        depCounts[dependencies[i]] = (depCounts[dependencies[i]] || 0) + 1;
-        for(let j=i+1;j<dependencies.length;j++){
+      // for(let i=0;i<dependencies.length;i++){
+      //   let foundSimilar = false;
+      //   depCounts[dependencies[i]] = (depCounts[dependencies[i]] || 0) + 1;
+      //   for(let j=i+1;j<dependencies.length;j++){
+      //     if(i !== j && (dependencies[i].includes(dependencies[j]) || dependencies[j].includes(dependencies[i]))){
+      //       foundSimilar = true;
+      //         depCounts[dependencies[i]]++;
+      //         depCounts[dependencies[j]]++;
+      //       break;
+      //     }
+      //   }
+      //   if(!foundSimilar){
+      //     ndepList.push(dependencies[i]);
+      //   }
+      // }
+      for(let i=0;i<dependencies.length;i++){
+        let count = 0;
+        for(let j=0;j<dependencies.length;j++){
           if(i !== j && (dependencies[i].includes(dependencies[j]) || dependencies[j].includes(dependencies[i]))){
-            foundSimilar = true;
-              depCounts[dependencies[i]]++;
-              depCounts[dependencies[j]]++;
-            break;
+            count++;
+          }
+          if(dependencies[i].includes('@')){
+            count-=2;
           }
         }
-        if(!foundSimilar){
-          ndepList.push(dependencies[i]);
-        }
+        depCounts[dependencies[i]] = count;
       }
+      console.log(depCounts);
       let depCountsArray = Object.entries(depCounts);
-      depCountsArray = depCountsArray.filter(([dep, count]: [string, number]) => count > 2 && (!dep.includes('-') && !dep.includes('/')));
+      depCountsArray = depCountsArray.filter(([dep, count]: [string, number]) => count > 2 || ((!dep.includes('-') && !dep.includes('/') && !dep.includes('@') && !dep.includes('.') || count>4)));
       let top5Deps = depCountsArray.slice(0, 5);
       const depStringArr = depCountsArray.map(([dep, count]: [string, number]) => dep).join(",");
-      console.log(depCountsArray);
+      console.log(depStringArr);
       if(progress<60){
         progress = 80;
         setProgress(progress);
@@ -174,9 +189,18 @@ function Loader({id}) {
         progress = 80;
         setProgress(progress);
       }
-      const prompt = `Create a detailed Readme.md file for a github project with title ${repoName} and description ${repoDesc}, built mostly using ${repoLang} language ${depStringArr && `with following dependencies : ${depStringArr}`}. The project is hosted at ${repoUrl}`;
+      const prompt = `Create a detailed Readme.md file for a github project with title ${repoName} and description ${repoDesc}, built mostly using ${repoLang} language ${depStringArr && `with following dependencies : ${depStringArr}`}. The project is hosted at ${repoUrl}
+      Follow the below structure:
+      1. Title
+      2. Description(write a detailed description about the project with the relevance of the project and its importance)
+      3. Deployement
+      4. Dependencies
+      5. Installation
+      and more such detailed points.
+      Return just the markdown text.Nothing irrelevant.
+      `;
       setCurrProcess(`Generating Readme Text`);
-      const readmeText = await getReadme(prompt)
+      const readmeText = await getGemini(prompt);
       if(progress<90){
         progress = 90;
         setProgress(progress);

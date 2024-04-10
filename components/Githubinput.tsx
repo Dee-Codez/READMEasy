@@ -143,7 +143,7 @@ const Githubinput = () => {
 
   return (
     <div className="relative">
-        <Modal isOpen={modalIsOpen} onRequestClose={closeModal} style={customStyles}>         
+        <Modal isOpen={modalIsOpen} onRequestClose={closeModal} style={customStyles} ariaHideApp={false}>         
             <div className="text-black text-center flex flex-col items-center">
                 <p>Hi <span className="text-indigo-500 font-bold">{user && user.name}</span>. Thank you for visiting the site again</p>
                 <p className="mt-2">You can either continue editing <span className="text-blue-500 font-semibold">previously generated READMEs</span> or can start <span className="text-blue-500 font-semibold">creating new ones</span>..</p>

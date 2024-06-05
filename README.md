@@ -1,39 +1,59 @@
-# READMEasy
+<h1 align="center" id="title">READMEasy</h1>
 
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+<p align="center"><img src="https://socialify.git.ci/Dee-Codez/READMEasy/image?font=Source%20Code%20Pro&amp;language=1&amp;name=1&amp;owner=1&amp;pattern=Charlie%20Brown&amp;theme=Dark" alt="project-image"></p>
 
-## Getting Started
+<p id="description">Ever thought of starting the documentation of your project as troublesome. Well consider them days of the past coz now READMEasy has come to your rescue!! With our product you now won't ever have to start writing docs from scratch and instead with an awesome Formulate AI-Generated boilerplate content with full customization capabilities. This not only provides with a generic template but also uses context of whatever your project provides be it deployement URIs languages Dockerfiles and even takes into account all technical dependencies!!</p>
 
-First, run the development server:
+<h2>🚀 Demo</h2>
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+[https://readmeasy.vercel.app/](https://readmeasy.vercel.app/)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+<h2>Project Screenshots:</h2>
+</br>
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+<h3 align="center">Landing Page</h3>
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+![Screenshot 2024-06-05 175333](https://github.com/Dee-Codez/READMEasy/assets/114132607/47586e34-1bcf-4b63-b40d-69eb48fd3600)
 
-## Learn More
+<h3 align="center">User Page</h3>
 
-To learn more about Next.js, take a look at the following resources:
+![Screenshot 2024-06-05 182116](https://github.com/Dee-Codez/READMEasy/assets/114132607/6a99b887-0ebc-4535-8ccb-d9d49f868f4a)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+<h3 align="center">Loading Page</h3>
 
-## Deploy on Vercel
+![Screenshot 2024-06-05 180858](https://github.com/Dee-Codez/READMEasy/assets/114132607/20cf375b-5e64-4e50-8b23-5d8a8fdf7b7d)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
-=======
+<h3 align="center">Editor Page</h3>
+
+![Screenshot 2024-06-05 180333](https://github.com/Dee-Codez/READMEasy/assets/114132607/94880227-4409-4005-b217-483118535356)
+
+</br>
+  
+<h2>🧐 Features</h2>
+
+Here're some of the project's techincal features:
+
+*   Keeps track of previously generated readme's for ease of access
+*   Promise based UI Handling so every loading is intricate with completion percentages
+*   Gets Context of whatever is publically accesible via Github
+*   Takes into account the dependencies of every project
+
+  
+  
+<h2>💻 Built with</h2>
+
+Technologies used in the project:
+
+*   NextJS
+*   TypeScript
+*   TailwindCSS
+*   Puppeteer
+*   PostgreSQL
+*   PrismaORM
+
+
+<h2>💖Like my work?</h2>
+
+Contact me at<p>debampati44@gmail.com</p>

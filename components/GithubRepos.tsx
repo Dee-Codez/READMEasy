@@ -93,6 +93,10 @@ const GithubRepos = ({id}) => {
   const fetchRepos = async() => {
     const res = await fetch(`/api/github/repo?id=${id}`);
         let data = await res.json();
+        if (!Array.isArray(data)) {
+            console.error('Expected an array but received', data);
+            return;
+          }
         data = data.sort((a, b) => {
             return new Date(b.pushed_at).getTime() - new Date(a.pushed_at).getTime();
         });

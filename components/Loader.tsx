@@ -67,9 +67,17 @@ function Loader({id}) {
         //   body: JSON.stringify({url: pkg_url})
         // })
         const pkgdata = await fetch(pkg_url).then(res => res.json());
-        const devDep = Object.keys(pkgdata.devDependencies);
-        const dep = Object.keys(pkgdata.dependencies);
-        const allDep = [...devDep, ...dep];
+
+        //Processing package.json(pkgdat)
+        let dep;
+        let devDep;
+        if(pkgdata.dependencies){
+          dep = Object.keys(pkgdata.dependencies);
+        }
+        if(pkgdata.devDependencies){
+          devDep = Object.keys(pkgdata.devDependencies);
+        }
+        const allDep = [...(devDep || []), ...(dep || [])];
         return allDep;
       }
       else if(i.type === 'dir') {

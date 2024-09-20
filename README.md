@@ -2,7 +2,7 @@
 
 <p align="center"><img src="https://socialify.git.ci/Dee-Codez/READMEasy/image?font=Source%20Code%20Pro&amp;language=1&amp;name=1&amp;owner=1&amp;pattern=Charlie%20Brown&amp;theme=Dark" alt="project-image"></p>
 
-<p id="description">Ever thought of starting the documentation of your project as troublesome. Well consider them days of the past coz now READMEasy has come to your rescue!! With our product you now won't ever have to start writing docs from scratch and instead with an awesome Formulate AI-Generated boilerplate content with full customization capabilities. This not only provides with a generic template but also uses context of whatever your project provides be it deployement URIs languages Dockerfiles and even takes into account all technical dependencies!!</p>
+<p id="description">Ever thought of starting the documentation of your project as troublesome. Well consider them days of the past coz now READMEasy has come to your rescue!! With our product you now won't ever have to start writing docs from scratch and instead go off with an awesome AI-Generated boilerplate content with full customization capabilities. This not only provides with a generic template but also uses context of whatever your project provides be it deployement URIs languages Dockerfiles and even takes into account all technical dependencies!!</p>
 
 <h2>🚀 Demo</h2>
 
